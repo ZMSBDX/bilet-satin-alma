@@ -1,0 +1,14 @@
+# --- SQLite veritabanı dosyaları ---
+src/data/
+*.sqlite
+
+# --- Docker cache / log ---
+*.log
+*.pid
+
+# --- VS Code ayarları ---
+.vscode/
+
+# --- Sistem dosyaları ---
+.DS_Store
+Thumbs.db
