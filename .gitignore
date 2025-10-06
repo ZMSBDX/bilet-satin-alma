@@ -1,6 +1,6 @@
 # --- SQLite veritabanı dosyaları ---
-#src/data/
-#*.sqlite
+src/data/
+*.sqlite
 
 # --- Docker cache / log ---
 *.log
