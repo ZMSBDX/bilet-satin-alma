@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="app.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2864"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Booked_Seats" custom_title="0" dock_id="1" table="4,12:mainBooked_Seats"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011300ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">-- 1. User Tablosu
+CREATE TABLE User (
+    id TEXT PRIMARY KEY NOT NULL, -- PK (UUID)
+    full_name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,  -- UQ NN
+    role TEXT NOT NULL,          -- (user, company_admin)
+    password TEXT NOT NULL,
+    company_id TEXT,             -- FK Bus_Company(id), NULLABLE
+    balance REAL DEFAULT 0.0,    -- Varsayılan değer 0.0
+    created_at TEXT NOT NULL,    -- TIMESTAMP NN (ISO 8601 formatında önerilir)
+    
+    FOREIGN KEY (company_id) REFERENCES Bus_Company(id)
+);
+
+-- 2. Bus_Company Tablosu
+CREATE TABLE Bus_Company (
+    id TEXT PRIMARY KEY NOT NULL, -- PK (UUID)
+    name TEXT UNIQUE NOT NULL,    -- UQ NN
+    logo_path TEXT,
+    created_at TEXT NOT NULL      -- TIMESTAMP NN
+);
+
+-- 3. Trips Tablosu
+CREATE TABLE Trips (
+    id TEXT PRIMARY KEY NOT NULL,         -- PK (UUID)
+    company_id TEXT NOT NULL,             -- PK, FK Bus_Company(id)
+    destination_city TEXT NOT NULL,
+    arrival_time TEXT NOT NULL,           -- DATETIME NN
+    departure_time TEXT NOT NULL,         -- DATETIME NN
+    departure_city TEXT NOT NULL,
+    price REAL NOT NULL,                  -- INTEGER (Gerçekte fiyat REAL/NUMERIC olmalı)
+    capacity INTEGER NOT NULL,
+    created_date TEXT,                    -- TIMESTAMP
+    
+    FOREIGN KEY (company_id) REFERENCES Bus_Company(id)
+);
+
+-- 4. Coupons Tablosu
+CREATE TABLE Coupons (
+    id TEXT PRIMARY KEY NOT NULL,   -- PK (UUID)
+    code TEXT UNIQUE NOT NULL,      -- UQ NN
+    discount REAL NOT NULL,         -- REAL NN
+    usage_limit INTEGER NOT NULL,
+    expire_date TEXT NOT NULL,      -- DATETIME NN
+    created_at TEXT NOT NULL
+);
+
+-- 5. User_Coupons Tablosu (Kullanıcı-Kupon çoktan çoğa ilişki)
+CREATE TABLE User_Coupons (
+    id TEXT PRIMARY KEY NOT NULL,   -- PK (UUID)
+    coupon_id TEXT NOT NULL,        -- FK Coupons(id)
+    user_id TEXT NOT NULL,          -- FK User(id)
+    created_at TEXT NOT NULL,       -- TIMESTAMP
+    
+    FOREIGN KEY (coupon_id) REFERENCES Coupons(id),
+    FOREIGN KEY (user_id) REFERENCES User(id)
+);
+
+-- 6. Tickets Tablosu
+CREATE TABLE Tickets (
+    id TEXT PRIMARY KEY NOT NULL,   -- PK (UUID)
+    trip_id TEXT NOT NULL,          -- FK Trips(id)
+    user_id TEXT NOT NULL,          -- FK User(id)
+    status TEXT NOT NULL,           -- (active, cancelled, expired)
+    total_price REAL NOT NULL,      -- INTEGER (Gerçekte fiyat REAL/NUMERIC olmalı)
+    created_at TEXT NOT NULL,       -- TIMESTAMP
+    
+    FOREIGN KEY (trip_id) REFERENCES Trips(id),
+    FOREIGN KEY (user_id) REFERENCES User(id)
+);
+
+-- 7. Booked_Seats Tablosu (Biletler ile ayrılan koltuklar)
+CREATE TABLE Booked_Seats (
+    id TEXT PRIMARY KEY NOT NULL,     -- PK (UUID)
+    ticket_id TEXT NOT NULL,          -- FK Tickets(id)
+    seat_number INTEGER NOT NULL,
+    created_at TEXT NOT NULL,
+    
+    FOREIGN KEY (ticket_id) REFERENCES Tickets(id)
+);</sql><current_tab id="0"/></tab_sql></sqlb_project>
